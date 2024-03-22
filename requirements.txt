@@ -2,3 +2,4 @@ confluent-kafka
 requests
 python-dotenv
 pyspark
+json5
