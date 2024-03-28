@@ -5,7 +5,7 @@
 import time
 import requests
 import json
-from confluent_kafka import Producer
+from confluent_kafka import Producer, SerializingProducer
 
 BASE_URL = "https://randomuser.me/api/"
 
@@ -36,16 +36,19 @@ def generate_data(url : str=BASE_URL) -> dict:
         }
 
 if __name__ == '__main__':
-    producer = Producer({
-                'bootstrap.servers': 'broker-kafka1:19092,broker-kafka2:19093,broker-kafka3:19094'
+    producer = SerializingProducer({
+                'bootstrap.servers': 'localhost:29095'
             }
         )
     for _ in range(5):
         person_data = generate_data()
+        print("trying to produce!!!------")
+        time.sleep(1)
         producer.produce(
             "people_topic", 
             key = person_data['person_id'], 
             value = json.dumps(person_data), 
             on_delivery = kafka_callback)
         
-        time.sleep(3)
+        print('Produced voter data:{}'.format(person_data))
+        time.sleep(1)
