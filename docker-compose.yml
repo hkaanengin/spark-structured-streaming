@@ -162,6 +162,8 @@ services:
   postgres:
     image: postgres:latest
     container_name: postgres
+    depends_on:
+      - zookeeper
     ports:
       - "5432:5432"
     environment:
