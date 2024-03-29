@@ -18,7 +18,7 @@ def kafka_callback(err, msg):
 
 def generate_data(url : str=BASE_URL) -> dict:
     '''
-        Creates a dictionary of a random person info which then later be produced into kafka
+        Creates a dictionary of a random person info which then later be ingested into kafka
     '''
     response = requests.get(url)
     if response.status_code == 200:
