@@ -4,3 +4,4 @@ python-dotenv
 pyspark
 json5
 psycopg2
+apache-airflow
