@@ -35,14 +35,13 @@ def generate_data(url : str=BASE_URL) -> dict:
             "latitude": data['location']['coordinates']['latitude']
         }
 
-if __name__ == '__main__':
+def start_streaming():
     producer = Producer({
                 'bootstrap.servers': 'localhost:29095'
             }
         )
     for _ in range(5):
         person_data = generate_data()
-        print("trying to produce!!!------")
         time.sleep(1)
         producer.produce(
             "people_topic", 
@@ -53,3 +52,7 @@ if __name__ == '__main__':
         print('Produced voter data:{}'.format(person_data))
         producer.flush()
         time.sleep(1)
+
+
+if __name__ == '__main__':
+    start_streaming()

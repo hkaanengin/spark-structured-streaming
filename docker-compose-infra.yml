@@ -1,0 +1,301 @@
+version: '3'
+
+services:
+#ZOOKEEPER
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.4.0
+    hostname: zookeeper
+    container_name: zookeeper
+    ports:
+      - "2182:2182"
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2182
+      ZOOKEEPER_TICK_TIME: 2000
+    healthcheck:
+      test: ["CMD", "bash", "-c", "echo 'ruok' | nc localhost 2182" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - confluent
+#BROKER-1
+  broker-kafka1:
+    image: confluentinc/cp-kafka:7.4.0
+    hostname: broker1-kafka1
+    container_name: broker-kafka1
+    depends_on:
+      - zookeeper
+    ports:
+      - "9095:9095"
+      - "29095:29095"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2182"
+      KAFKA_ADVERTISED_LISTENERS : PLAINTEXT://broker-kafka1:9095, PLAINTEXT_HOST://localhost:29095
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP : PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_JMX_PORT: 9999
+      KAFKA_JMX_HOSTNAME: 'broker-kafka1'
+      KAFKA_ALLOW_EVERYONE_IF_NO_ACL_FOUND: "true"
+      KAFKA_DELETE_TOPIC_ENABLE: "true"
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+      KAFKA_SCHEMA_REGISTRY_URL: "schema-registry:8081"
+    healthcheck:
+      test: ["CMD", "bash", "-c", "nc -z localhost 9095" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - confluent
+#BROKER-2
+  broker-kafka2:
+    image: confluentinc/cp-kafka:7.4.0
+    hostname: broker-kafka2
+    container_name: broker-kafka2
+    ports:
+      - "9096:9096"
+      - "29096:29096"
+    environment:
+      KAFKA_BROKER_ID: 2
+      KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2182"
+      KAFKA_ADVERTISED_LISTENERS : PLAINTEXT://broker-kafka2:9096, PLAINTEXT_HOST://localhost:29096
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP : PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_JMX_PORT: 9998
+      KAFKA_JMX_HOSTNAME: 'broker-kafka2'
+      KAFKA_ALLOW_EVERYONE_IF_NO_ACL_FOUND: "true"
+      KAFKA_DELETE_TOPIC_ENABLE: "true"
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+      KAFKA_SCHEMA_REGISTRY_URL: "schema-registry:8081"
+    healthcheck:
+      test: ["CMD", "bash", "-c", "nc -z localhost 9096" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - confluent
+#BROKER-3    
+  broker-kafka3:
+    image: confluentinc/cp-kafka:7.4.0
+    hostname: broker-kafka3
+    container_name: broker-kafka3
+    ports:
+      - "9097:9097"
+      - "29097:29097"
+    environment:
+      KAFKA_BROKER_ID: 3
+      KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2182"
+      KAFKA_ADVERTISED_LISTENERS : PLAINTEXT://broker-kafka3:9097, PLAINTEXT_HOST://localhost:29097
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP : PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_JMX_PORT: 9997
+      KAFKA_JMX_HOSTNAME: 'broker-kafka3'
+      KAFKA_ALLOW_EVERYONE_IF_NO_ACL_FOUND: "true"
+      KAFKA_DELETE_TOPIC_ENABLE: "true"
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+      KAFKA_SCHEMA_REGISTRY_URL: "schema-registry:8081"
+    healthcheck:
+      test: ["CMD", "bash", "-c", "nc -z localhost 9097" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - confluent
+#KAFKA-CONNECT
+  kafka-connect:
+    image: confluentinc/cp-kafka-connect:7.3.2
+    depends_on:
+      - zookeeper
+      - broker-kafka1
+      - broker-kafka2
+      - broker-kafka3
+    ports:
+      - "8083:8083"
+    environment:
+      CONNECT_ZOOKEEPER_CONNECT: 'zookeeper:2182'
+      CONNECT_BOOTSTRAP_SERVERS: broker-kafka1:9095,broker-kafka2:9096,broker-kafka3:9097
+      CONNECT_REST_PORT: 8083
+      CONNECT_GROUP_ID: compose-connect-group
+      CONNECT_CONFIG_STORAGE_TOPIC: compose-connect-configs
+      CONNECT_OFFSET_STORAGE_TOPIC: compose-connect-offsets
+      CONNECT_STATUS_STORAGE_TOPIC: compose-connect-status
+      CONNECT_KEY_CONVERTER: org.apache.kafka.connect.storage.StringConverter
+      CONNECT_KEY_CONVERTER_SCHEMA_REGISTRY_URL: 'http://schema-registry:8081'
+      CONNECT_VALUE_CONVERTER: org.apache.kafka.connect.storage.StringConverter
+      CONNECT_VALUE_CONVERTER_SCHEMA_REGISTRY_URL: 'http://schema-registry:8081'
+      CONNECT_INTERNAL_KEY_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+      CONNECT_INTERNAL_VALUE_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+      CONNECT_REST_ADVERTISED_HOST_NAME: 'kafka-connect'
+      CONNECT_LOG4J_ROOT_LOGLEVEL: 'INFO'
+      CONNECT_LOG4J_LOGGERS: 'org.apache.kafka.connect.runtime.rest=WARN,org.reflections=ERROR'
+      CONNECT_PLUGIN_PATH: '/usr/share/java,/usr/share/confluent-hub-components'
+    volumes:
+      - ./kafka-connect:/etc/kafka-connect/jars
+    networks:
+      - confluent
+#SCHEMA-REGISTRY
+  schema-registry:
+    image: confluentinc/cp-schema-registry:7.3.2
+    hostname: schema-registry
+    container_name: schema-registry
+    depends_on:
+      - zookeeper
+      - broker-kafka1
+      - broker-kafka2
+      - broker-kafka3
+    ports:
+      - "8081:8081"
+    environment:
+      SCHEMA_REGISTRY_HOST_NAME: schema-registry
+      SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL: "zookeeper:2182"
+      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: broker-kafka1:9095,broker-kafka2:9096,broker-kafka3:9097
+      SCHEMA_REGISTRY_LISTENERS: "http://0.0.0.0:8081"
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8081/" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - confluent
+#KAFKA-UI
+  kafka-ui:
+    container_name: kafka-ui-1
+    image: provectuslabs/kafka-ui:latest
+    ports:
+      - 8888:8080 # Changed to avoid port clash with akhq
+    depends_on:
+      - broker-kafka1
+      - broker-kafka2
+      - broker-kafka3
+      - schema-registry
+      - kafka-connect
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: PLAINTEXT://broker-kafka1:9095,PLAINTEXT_HOST://broker-kafka1:9095
+      KAFKA_CLUSTERS_0_SCHEMAREGISTRY: http://schema-registry:8081
+      KAFKA_CLUSTERS_0_KAFKACONNECT_0_NAME: connect
+      KAFKA_CLUSTERS_0_KAFKACONNECT_0_ADDRESS: http://kafka-connect:8083
+      DYNAMIC_CONFIG_ENABLED: 'true'
+    networks:
+      - confluent
+#KAFKA CONTROL CENTER
+  control-center:
+    image: confluentinc/cp-enterprise-control-center:7.4.0
+    hostname: control-center
+    container_name: control-center
+    depends_on:
+      broker-kafka1:
+        condition: service_healthy
+      broker-kafka2:
+        condition: service_healthy
+      broker-kafka3:
+        condition: service_healthy
+      schema-registry:
+        condition: service_healthy
+    ports:
+      - "9021:9021"
+    environment:
+      CONTROL_CENTER_BOOTSTRAP_SERVERS: broker-kafka1:9095,broker-kafka2:9096,broker-kafka3:9097
+      CONTROL_CENTER_SCHEMA_REGISTRY_URL: "http://schema-registry:8081"
+      CONTROL_CENTER_REPLICATION_FACTOR: 1
+      CONTROL_CENTER_INTERNAL_TOPICS_PARTITIONS: 1
+      CONTROL_CENTER_MONITORING_INTERCEPTOR_TOPIC_PARTITIONS: 1
+      CONFLUENT_METRICS_TOPIC_REPLICATION: 1
+      CONFLIENT_METRICS_ENABLE: 'false'
+      PORT: 9021
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:9021/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - confluent
+#CASSANDRA
+  cassandra_db:
+    image: cassandra:latest
+    container_name: cassandra
+    hostname: cassandra
+    ports:
+      - "9042:9042"
+    environment:
+      - MAX_HEAP_SIZE=512M
+      - HEAP_NEWSIZE=100M
+      - CASSANDRA_USERNAME=cassandra
+      - CASSANDRA_PASSWORD=cassandra
+    networks:
+      - confluent
+##Airflow Images
+#WEB SERVER
+  webserver:
+    image: apache/airflow:2.6.0-python3.9
+    command: webserver
+    entrypoint: ['/opt/airflow/script/entrypoint.sh']
+    depends_on:
+      - postgres
+    environment:
+      - LOAD_EX=n
+      - EXECUTOR=Sequential
+      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres:5432/airflow
+      - AIRFLOW_WEBSERVER_SECRET_KEY=this_is_a_very_secured_key
+    logging:
+      options:
+        max-size: 10m
+        max-file: "3"
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./logs:/opt/airflow/logs
+      - ./config:/opt/airflow/config
+      - ./plugins:/opt/airflow/plugins
+      - ./script/entrypoint.sh:/opt/airflow/script/entrypoint.sh
+      - ./requirements.txt:/opt/airflow/requirements.txt
+    ports:
+      - "8082:8082"
+    healthcheck:
+      test: ['CMD-SHELL', "[ -f /opt/airflow/airflow-webserver.pid ]"]
+      interval: 30s
+      timeout: 30s
+      retries: 3
+    networks:
+      - confluent
+#SCHEDULER
+  scheduler:
+    image: apache/airflow:2.6.0-python3.9
+    depends_on:
+      webserver:
+        condition: service_healthy
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./logs:/opt/airflow/logs
+      - ./config:/opt/airflow/config
+      - ./plugins:/opt/airflow/plugins
+      - ./script/entrypoint.sh:/opt/airflow/script/entrypoint.sh
+      - ./requirements.txt:/opt/airflow/requirements.txt
+    environment:
+      - LOAD_EX=n
+      - EXECUTOR=Sequential
+      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres:5432/airflow
+      - AIRFLOW_WEBSERVER_SECRET_KEY=this_is_a_very_secured_key
+    command: bash -c "pip install -r ./requirements.txt && airflow db upgrade && airflow scheduler"
+    networks:
+      - confluent
+#POSTGRES
+  postgres:
+    image: postgres:latest
+    container_name: spark-structured-postgres
+    depends_on:
+      - zookeeper
+    ports:
+      - "5433:5433"
+    environment:
+      POSTGRES_USER : airflow
+      POSTGRES_PASSWORD : airflow
+      POSTGRES_DB : airflow
+    healthcheck:
+      test: ["CMD", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 10s
+      timeout: 5s
+      retries: 5  
+    networks:
+      - confluent  
+networks:
+  confluent:
