@@ -3,5 +3,5 @@ requests
 python-dotenv
 pyspark
 json5
-psycopg2
+cassandra-driver
 apache-airflow
