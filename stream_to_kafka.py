@@ -37,7 +37,7 @@ def generate_data(url : str=BASE_URL) -> dict:
 
 def start_streaming():
     producer = Producer({
-                'bootstrap.servers': 'localhost:29095'
+                'bootstrap.servers': 'broker-kafka1:9095'
             }
         )
     for _ in range(5):

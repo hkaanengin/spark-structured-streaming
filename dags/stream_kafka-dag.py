@@ -35,6 +35,7 @@ def generate_data(url : str=BASE_URL) -> dict:
 def start_streaming():
     import time
     from confluent_kafka import Producer
+
     producer = Producer({
                 'bootstrap.servers': 'broker-kafka1:9095'
             }
@@ -45,7 +46,7 @@ def start_streaming():
         producer.produce(
             "people_topic", 
             key = person_data['person_id'], 
-            value = json.dumps(person_data), 
+            value = json.dumps(person_data),
             on_delivery = kafka_callback)
         
         print('Produced voter data:{}'.format(person_data))
@@ -61,9 +62,8 @@ default_args = {
     'retry_delay': timedelta(seconds=5)
 }
 
-with DAG(dag_id='generate_random_people', default_args=default_args, schedule_interval='55 10 * * *', catchup=False) as dag:
-
-
+with DAG(dag_id='generate_random_people', default_args=default_args, schedule_interval='57 13 * * *', catchup=False) as dag:
+    
     data_stream_task = PythonOperator(
     task_id='kafka_data_stream',
     python_callable=start_streaming,
