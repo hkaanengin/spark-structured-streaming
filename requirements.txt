@@ -1,7 +1,7 @@
 confluent-kafka
 requests
 python-dotenv
-pyspark
+#pyspark
 json5
 cassandra-driver
 apache-airflow
