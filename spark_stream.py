@@ -6,6 +6,9 @@ from pyspark.sql import SparkSession, functions as F
 from pyspark.sql.types import StructType, StructField, StringType
 
 def create_keyspace(session):
+    """
+        Creates Cassandra keypspace. Keyspaces are like databases in SQL/Snowflake etc with the replication factor feature added to them
+    """
     session.execute(
         """
             CREATE KEYSPACE IF NOT EXISTS demo_dev
@@ -17,6 +20,9 @@ def create_keyspace(session):
     logging.info('Keyspace created successfuly!')
 
 def create_table(session):
+    """
+        Creates Cassandra table
+    """
     session.execute(
         """
             CREATE TABLE IF NOT EXISTS demo_dev.people_information (
@@ -39,6 +45,10 @@ def insert_data(session, **kwargs):
     return None
 
 def create_spark_connection(): #check mvn repository change checj 55mins realtime data streaming codewithyu
+    """
+        Creates the spark session with cassandra and spark connection. Make sure versions of the connectors matches with your downloaded jar.
+        You may checkout the available packages here on MVN ..... : 
+    """
     try:
         spark_conn = SparkSession.builder \
                 .appName('SparkStreaming') \
@@ -52,6 +62,9 @@ def create_spark_connection(): #check mvn repository change checj 55mins realtim
     return spark_conn
 
 def create_kafka_dataframe(spark_conn):
+    """
+        Subscribes to the topic and read streaming data. Creates the initial dataframe
+    """
     try: #checout "spark acahe structure streaming kafka integration" page for multiple topics
         spark_df = spark_conn.readStream \
                 .format('kafka') \
@@ -66,6 +79,9 @@ def create_kafka_dataframe(spark_conn):
     return spark_df
 
 def create_cassandra_connection():
+    """
+        Creates Cassandra connection
+    """
     try:
         cluster = Cluster(['localhost'])
         
@@ -75,6 +91,9 @@ def create_cassandra_connection():
         return None
     
 def create_selected_kafka_df(spark_df):
+    """
+        Modifies the initial dataframe and creates the final dataframe.
+    """
     schema = StructType([
         StructField('person_id', StringType(), False),
         StructField('name', StringType(), False),
