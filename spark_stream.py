@@ -51,7 +51,7 @@ def create_spark_connection(): #check mvn repository change checj 55mins realtim
         spark_conn = None
     return spark_conn
 
-def kafka_connection(spark_conn):
+def create_kafka_dataframe(spark_conn):
     try: #checout "spark acahe structure streaming kafka integration" page for multiple topics
         spark_df = spark_conn.readStream \
                 .format('kafka') \
@@ -59,9 +59,9 @@ def kafka_connection(spark_conn):
                 .option('subscribe', 'people_topic') \
                 .option('startingOffsets', 'earliest') \
                 .load()
-        logging.info("Kafka dataframe created successfuly!")
+        logging.info("Initial kafka dataframe created successfuly!")
     except Exception as e:
-        logging.warning(f"Couldn't be create kafka dataframe due to {e}")
+        logging.warning(f"Couldn't initialize kafka dataframe due to {e}")
         spark_df = None
     return spark_df
 
@@ -99,7 +99,7 @@ if __name__ == '__main__':
     spark_conn = create_spark_connection()
 
     if spark_conn:
-        spark_df = kafka_connection(spark_conn)
+        spark_df = create_kafka_dataframe(spark_conn)
         selected_df = create_selected_kafka_df(spark_df)
 
         cass_session = create_cassandra_connection()
