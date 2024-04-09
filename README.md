@@ -3,7 +3,7 @@
 ## Table of Contents
 - [Introduction](#introduction)
 - [Project Architecture](#project-architecture)
-- [Container Up!](#container-up!)
+- [Container Creation!](#container-creation)
 
 ## Introduction
 
@@ -23,7 +23,7 @@ Essential components for this project are:
 - **Apache Spark**: Data processor unit of the system. Contains one master&worker.
 - **Cassandra**: Where the data will be stored.
 
-## Container Up!
+## Container Creation
 
 Before getting the container up, two Jar files need to be downloaded for Spark configuration. You may do that via issuing the commands below in your terminal:
 
