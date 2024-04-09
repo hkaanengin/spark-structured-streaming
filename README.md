@@ -4,6 +4,8 @@
 - [Introduction](#introduction)
 - [Project Architecture](#project-architecture)
 - [Container Creation](#container-creation)
+- [Web Services](#web-services)
+    - [Apache Airflow](#apache-airflow)
 
 ## Introduction
 
@@ -47,3 +49,11 @@ If you encounter any permission error about accessing the entrypoint.sh(I did on
 ```bash
 bash -c "chmod +x /opt/airflow/script/entrypoint.sh"
 ```
+
+## Web Services
+
+When the container is up and running, you may now access the Airflow, Kafka UI and Control Center.
+
+## Apache Airflow
+
+You now can access the Apache Airflow UI at `https://localhost:8080`
