@@ -3,7 +3,7 @@
 ## Table of Contents
 - [Introduction](#introduction)
 - [Project Architecture](#project-architecture)
-- [Container Creation!](#container-creation)
+- [Container Creation](#container-creation)
 
 ## Introduction
 
