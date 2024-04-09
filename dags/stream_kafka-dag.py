@@ -7,6 +7,9 @@ from airflow.operators.python_operator import PythonOperator
 BASE_URL = "https://randomuser.me/api/"
 
 def kafka_callback(err, msg):
+    '''
+        Simple Callback function for kafka producer.
+    '''
     if err is not None:
         print(f"Message delivery failed due to {err}")
     else:

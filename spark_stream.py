@@ -52,7 +52,7 @@ def create_spark_connection(): #check mvn repository change checj 55mins realtim
     try:
         spark_conn = SparkSession.builder \
                 .appName('SparkStreaming') \
-                .config('spark.jars.packages', 'com.datastax.spark:spark-cassandra-connector?2.13:3.4.1', 'org.apache.spark:spark-sql-kafka-0-10_2.13:3.4.1') \
+                .config('spark.jars.packages', 'com.datastax.spark:spark-cassandra-connector:2.13:3.5.0', 'org.apache.spark:spark-sql-kafka-0-10_2.13:3.5.1') \
                 .config('spark.cassandra.connection.host', 'localhost') \
                 .getorCreate()
         logging.info("Spark connection established successfuly!")
