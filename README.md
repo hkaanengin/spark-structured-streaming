@@ -36,7 +36,7 @@ Or simply going to Maven Repository and downloading them manually. Don't forget 
 - [Spark Cassandra Connector](https://mvnrepository.com/artifact/com.datastax.spark/spark-cassandra-connector_2.13/3.5.0)
 - [Spark SQL Kafka](https://mvnrepository.com/artifact/org.apache.spark/spark-sql-kafka-0-10_2.13/3.5.1)
 
-Now, we can get container up and running with the necessary services by issuing the command below, in your terminal :
+Now, we can get the container up and running with the necessary services by issuing the command below, in your terminal :
 
 ```bash
 docker compose -f docker-compose-infra.yml up
