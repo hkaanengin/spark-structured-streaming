@@ -6,6 +6,8 @@
 - [Container Creation](#container-creation)
 - [Web Services](#web-services)
     - [Apache Airflow](#apache-airflow)
+    - [Kafka UI](#kafka-ui)
+    - [Control Centre](#control-centre)
 
 ## Introduction
 
@@ -54,6 +56,14 @@ bash -c "chmod +x /opt/airflow/script/entrypoint.sh"
 
 When the container is up and running, you may now access the Airflow, Kafka UI and Control Center.
 
-## Apache Airflow
+### Apache Airflow
 
 You now can access the Apache Airflow UI at `https://localhost:8080`
+
+### Kafka UI
+
+You now can access the Kafka UI at `https://localhost:8888`
+
+### Control Centre
+
+You now can access the Control Centre UI at `https://localhost:9021`
