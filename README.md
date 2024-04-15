@@ -6,6 +6,8 @@
 - [Container Creation](#container-creation)
 - [Web Services](#web-services)
     - [Apache Airflow](#apache-airflow)
+    - [Kafka UI](#kafka-ui)
+    - [Control Centre](#control-centre)
 
 ## Introduction
 
@@ -13,7 +15,7 @@ This project serves as an illustration to how to build an end-to-end data pipeli
 
 ## Project Architecture
 
-![System Architecture](<path-to-image>)
+![System Architecture](https://github.com/hkaanengin/spark-structured-streaming/blob/assets/spark_structured.png)
 
 Essential components for this project are:
 - **Data Source**: [randomuser.me](https://randomuser.me/) API as the starting point of the project to generate random user data.
@@ -54,6 +56,14 @@ bash -c "chmod +x /opt/airflow/script/entrypoint.sh"
 
 When the container is up and running, you may now access the Airflow, Kafka UI and Control Center.
 
-## Apache Airflow
+### Apache Airflow
 
 You now can access the Apache Airflow UI at `https://localhost:8080`
+
+### Kafka UI
+
+You now can access the Kafka UI at `https://localhost:8888`
+
+### Control Centre
+
+You now can access the Control Centre UI at `https://localhost:9021`
