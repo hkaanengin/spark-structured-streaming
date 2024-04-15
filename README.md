@@ -54,7 +54,7 @@ bash -c "chmod +x /opt/airflow/script/entrypoint.sh"
 
 If you want to create a separate network for docker services, create one via command:
 ```bash
-docker network create airflow-kafka
+docker network create <new-network-name>
 ```
 
 ## Web Services
