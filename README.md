@@ -15,7 +15,7 @@ This project serves as an illustration to how to build an end-to-end data pipeli
 
 ## Project Architecture
 
-![System Architecture](<path-to-image>)
+![System Architecture](https://github.com/hkaanengin/spark-structured-streaming/tree/assets/spark_structured.png)
 
 Essential components for this project are:
 - **Data Source**: [randomuser.me](https://randomuser.me/) API as the starting point of the project to generate random user data.
