@@ -56,6 +56,7 @@ If you want to create a separate network for docker services, create one via com
 ```bash
 docker network create <new-network-name>
 ```
+Make sure you update `networks` in the docker-compose-infra file with the new network name.
 
 ## Web Services
 
