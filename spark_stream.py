@@ -1,9 +1,12 @@
 import logging
-
+from datetime import datetime
 from cassandra.auth import PlainTextAuthProvider
 from cassandra.cluster import Cluster
 from pyspark.sql import SparkSession, functions as F
 from pyspark.sql.types import StructType, StructField, StringType
+
+current_date = datetime.now().strftime('%Y-%m-%d')
+logging.basicConfig(filename=f'logs/spark_job/{current_date}/spark_stream', level=logging.INFO)
 
 def create_keyspace(session):
     """
