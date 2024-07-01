@@ -4,3 +4,5 @@ __pycache__
 mama.py
 logs
 .DS_Store
+spark-cassandra-connector_2.13-3.5.0.jar
+spark-sql-kafka-0-10_2.13-3.5.1.jar
