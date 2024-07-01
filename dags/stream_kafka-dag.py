@@ -64,7 +64,7 @@ default_args = {
     'retries': 1,
     'retry_delay': timedelta(seconds=5)
 }
-
+# Define the DAG: Change the schedule_interval to your preference
 with DAG(dag_id='generate_random_people', default_args=default_args, schedule_interval='57 13 * * *', catchup=False) as dag:
     
     data_stream_task = PythonOperator(
