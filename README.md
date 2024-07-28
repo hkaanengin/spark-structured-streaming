@@ -33,12 +33,14 @@ Before getting the container up, two Jar files need to be downloaded for Spark c
 
 ```bash
 cd jars
-curl -O https://repo1.maven.org/maven2/com/datastax/spark/spark-cassandra-connector_2.12/3.3.0/spark-cassandra-connector_2.12-3.3.0.jar
-curl -O https://repo1.maven.org/maven2/org/apache/spark/spark-sql-kafka-0-10_2.13/3.3.0/spark-sql-kafka-0-10_2.13-3.3.0.jar
+curl -O https://repo1.maven.org/maven2/com/datastax/spark/spark-cassandra-connector_2.12/3.3.0/spark-cassandra-connector_2.12-3.5.1.jar
+curl -O https://repo1.maven.org/maven2/org/apache/spark/spark-sql-kafka-0-10_2.13/3.3.0/spark-sql-kafka-0-10_2.13-3.5.1.jar
 ```
-Or simply going to Maven Repository and downloading them manually. Don't forget to move them to the root path of the project:
-- [Spark Cassandra Connector](https://mvnrepository.com/artifact/com.datastax.spark/spark-cassandra-connector_2.13/3.5.0)
+Or simply going to Maven Repository and downloading them manually:
+- [Spark Cassandra Connector](https://mvnrepository.com/artifact/com.datastax.spark/spark-cassandra-connector_2.13/3.5.1)
 - [Spark SQL Kafka](https://mvnrepository.com/artifact/org.apache.spark/spark-sql-kafka-0-10_2.13/3.5.1)
+
+After downloading the necessary jar files, move them into your pyspark jar folder under your virtual environment. The folder path is, for MacOS, .venv(my virtual env folder name)/lib/pyspark/jars.
 
 Now, we can get the container up and running with the necessary services by issuing the command below, in your terminal :
 
