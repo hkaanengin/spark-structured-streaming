@@ -1,12 +1,11 @@
 import logging
 from datetime import datetime
-from cassandra.auth import PlainTextAuthProvider
 from cassandra.cluster import Cluster
 from pyspark.sql import SparkSession, functions as F
-from pyspark.sql.types import StructType, StructField, StringType
+from pyspark.sql.types import StructType, StructField, StringType, IntegerType
 
 current_date = datetime.now().strftime('%Y-%m-%d')
-logging.basicConfig(filename=f'logs/spark_job/{current_date}/spark_stream', level=logging.INFO)
+logging.basicConfig(filename=f'spark_stream_logs/{current_date}', level=logging.INFO)
 
 def create_keyspace(session):
     """
@@ -54,11 +53,13 @@ def create_spark_connection(): #check mvn repository change checj 55mins realtim
     """
     try:
         spark_conn = SparkSession.builder \
-                .appName('SparkStreaming') \
-                .config('spark.jars.packages', 'com.datastax.spark:spark-cassandra-connector:2.13:3.5.0', 'org.apache.spark:spark-sql-kafka-0-10_2.13:3.5.1') \
-                .config('spark.cassandra.connection.host', 'localhost') \
-                .getorCreate()
+            .appName('SparkDataStreaming') \
+            .config('spark.jars.packages', "com.datastax.spark:spark-cassandra-connector_2.13:3.5.1,"
+                                           "org.apache.spark:spark-sql-kafka-0-10_2.13:3.5.1") \
+            .config('spark.cassandra.connection.host', 'localhost') \
+            .getOrCreate()
         logging.info("Spark connection established successfuly!")
+        logging.info(spark_conn)
     except Exception as e:
         logging.error(f"Couldn't create spark session due to {e}")
         spark_conn = None
@@ -68,14 +69,15 @@ def create_kafka_dataframe(spark_conn):
     """
         Subscribes to the topic and read streaming data. Creates the initial dataframe
     """
-    try: #checout "spark acahe structure streaming kafka integration" page for multiple topics
+    try: #checout "spark apache structure streaming kafka integration" page for multiple topics
         spark_df = spark_conn.readStream \
                 .format('kafka') \
-                .option('kafka.bootstrap.servers', 'localhost:29095') \
+                .option('kafka.bootstrap.servers', 'localhost:9095') \
                 .option('subscribe', 'people_topic') \
                 .option('startingOffsets', 'earliest') \
                 .load()
-        logging.info("Initial kafka dataframe created successfuly!")
+        logging.info("Initial kafka dataframe created successfuly!:")
+        logging.info(spark_df)
     except Exception as e:
         logging.warning(f"Couldn't initialize kafka dataframe due to {e}")
         spark_df = None
@@ -100,7 +102,7 @@ def create_selected_kafka_df(spark_df):
     schema = StructType([
         StructField('person_id', StringType(), False),
         StructField('name', StringType(), False),
-        StructField('age', StringType(), False),
+        StructField('age', IntegerType(), False),
         StructField('email', StringType(), True),
         StructField('address', StringType(), True),
         StructField('city', StringType(), True),
